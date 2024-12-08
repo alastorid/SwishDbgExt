@@ -143,13 +143,18 @@ public:
         ExtensionApis.nSize = sizeof (ExtensionApis);
         DebugControl->GetWindbgExtensionApis64(&ExtensionApis);
 
-        dprintf("       SwishDbgExt %s - Incident Response & Digital Forensics Debugging Extension\n"
+        WCHAR buffer[256];
+        DWORD size = GetEnvironmentVariableW(L"CI", buffer, 256);
+        if (size < 0)
+        {
+            dprintf("       SwishDbgExt %s - Incident Response & Digital Forensics Debugging Extension\n"
                 "       SwishDbgExt Copyright (C) 2018 Comae Technologies DMCC - www.comae.com\n"
                 "       SwishDbgExt Copyright (C) 2014-2018 Matthieu Suiche (@msuiche)\n\n"
                 "       This program comes with ABSOLUTELY NO WARRANTY; for details type `show w'.\n"
                 "       This is free software, and you are welcome to redistribute it\n"
                 "       under certain conditions; type `show c' for details.\n",
                 COMAE_TOOLKIT_VERSION);
+        }
 
         KeNumberProcessorsAddress = GetExpression("nt!KeNumberProcessors");
         KiProcessorBlockAddress = GetExpression("nt!KiProcessorBlock");
