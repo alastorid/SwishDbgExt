@@ -12,6 +12,7 @@ EXPORTS
 ; Extension commands.
 ;--------------------------------------------------------------------
 
+    hostname
     ms_dump
     ms_hivelist
     ms_readkcb

@@ -61,6 +61,7 @@ ULONG64 CmpMasterHiveAddress;
 class EXT_CLASS : public ExtExtension
 {
 public:
+    EXT_COMMAND_METHOD(hostname); 
     EXT_COMMAND_METHOD(ms_dump);
     EXT_COMMAND_METHOD(ms_readkcb);
     EXT_COMMAND_METHOD(ms_readknode);
@@ -168,6 +169,18 @@ public:
 };
 
 EXT_DECLARE_GLOBALS();
+
+EXT_COMMAND(hostname,
+    "Show hostname",
+    "")
+{
+    WCHAR buffer[256];
+    DWORD size = GetEnvironmentVariableW(L"COMPUTERNAME", buffer, 256);
+    if (size > 0)
+    {
+        Dml(L"%s\n", buffer);
+    }    
+}
 
 EXT_COMMAND(ms_process,
     "Display list of processes",
