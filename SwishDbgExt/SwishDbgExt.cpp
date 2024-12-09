@@ -179,11 +179,14 @@ EXT_COMMAND(hostname,
     "Show hostname",
     "")
 {
-    WCHAR buffer[256];
-    DWORD size = GetEnvironmentVariableW(L"COMPUTERNAME", buffer, 256);
+    CHAR buffer[256];
+    DWORD size = GetEnvironmentVariableA("COMPUTERNAME", buffer, 256);
     if (size > 0)
     {
-        Dml(L"%s\n", buffer);
+        Dml("%s\n", buffer);
+        char command[100];
+        snprintf(command, 100, "dx @$hostname = \"%s\"", buffer);
+        g_Ext->m_Control->Execute(DEBUG_OUTCTL_IGNORE | DEBUG_OUTCTL_NOT_LOGGED, command, DEBUG_EXECUTE_NOT_LOGGED);
     }    
 }
 
@@ -1187,16 +1190,21 @@ EXT_COMMAND(ms_callbacks,
             }
         }
     }
-
+    
+    //
+    // dt nt!_OBJECT_TYPE poi(nt!PsProcessType)
+    //
     ObjectTypesPtr = ObGetObjectTypesObject();
 
     if (ObjectTypesPtr) {
-        // Dml("ObjectTypes.ObjectPtr = %I64X\n", ObjectTypes.ObjectPtr);
+        //Dml("ObjectTypes.ObjectPtr = %I64X\n", ObjectTypesPtr);
         vector<HANDLE_OBJECT> Handles = ObOpenObjectDirectory(ObjectTypesPtr);
         for each (HANDLE_OBJECT Handle in Handles) {
             ExtRemoteTyped currentType("(nt!_OBJECT_TYPE *)@$extin", Handle.ObjectPtr);
             ULONG64 FieldOffset = 0;
 			ULONG64 Head = 0;
+
+            //Dml("ObjectType Name = %S @ %#x\n", wstring(Handle.Name), Handle.ObjectPtr);
 
 			if (currentType.HasField("CallbackList")) {
 				FieldOffset = currentType.GetFieldOffset("CallbackList.Flink");
